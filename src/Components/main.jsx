@@ -1,14 +1,30 @@
 import React from 'react'
 import './main.css'
-import { useState } from 'react'
+import { useState,useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid';
 
 const main = () => {
     const [todo, settodo] = useState('')
     const [todos, settodos] = useState([])
+
+    useEffect(() => {
+     let todostring=localStorage.getItem("todos")
+     if(todostring)
+     {
+       let todos=JSON.parse(localStorage.getItem("todos"))
+      settodos(todos);
+     }
+     
+    }, [])//it will run only first time
+    
+    const savetols = (params) => {
+      localStorage.setItem("todos", JSON.stringify(todos))
+    }
     const handleAdd = () =>{
+      
       settodos([...todos, {id:uuidv4(), todo, iscompleted: false}])
       settodo("");
+      savetols();
     }
     const handleChange = (e) =>{
         settodo(e.target.value);
@@ -21,6 +37,7 @@ const main = () => {
       let newTodo=[...todos];
       settodos(newTodo);
       newTodo[index].iscompleted=!newTodo[index].iscompleted;
+      savetols();
     }
     const handleEdit = (e) =>{
       let id =e;
@@ -35,6 +52,7 @@ const main = () => {
         return iteam.id!==id;
       });
       settodos(newTodo);
+      savetols();
     }
     const handledelete = (e) =>{
       confirm("are you sure you want to delete")
@@ -43,6 +61,7 @@ const main = () => {
         return iteam.id!==id;
       });
       settodos(newTodo);
+      savetols();
     }
   return (
     <div className="container bg-violet-300 mx-auto my-5 rounded-lg" style={{maxWidth: '80vw'}}>
@@ -64,10 +83,6 @@ const main = () => {
         </div>
         </div>
         })}
-       
-       
-        
-        
     </div>
   )
 }
